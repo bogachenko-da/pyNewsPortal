@@ -1,0 +1,63 @@
+from django.contrib.auth.models import User                           
+from news.models import Author, Category, Post, PostCategory, Comment
+from datetime import datetime
+
+user1 = User.objects.create_user('Иванов Иван Иванович')              
+user2 = User.objects.create_user('Петров Петр Петрович') 
+
+author1 = Author.objects.create(user=user1)
+author2 = Author.objects.create(user=user2)
+
+category1 = Category.objects.create(name='Наука')      
+category2 = Category.objects.create(name='Спорт')        
+category3 = Category.objects.create(name='Автомобили') 
+category4 = Category.objects.create(name='Экономика')
+
+post1 = Post.objects.create(author=author1, post='Статья', title="30 лет тому вперед: какие открытия нас ждут", text="Тридцать лет — это примерно миллиард секунд. Примерно миллиард ударов сердца. Давайте посмотрим на тридцать лет назад. В то время мы еще не открыли ни одной планеты у нормальных звезд, похожих на Солнце, и не знали о том, что наша Вселенная расширяется всё быстрее и быстрее. Первое из двух открытий можно было предсказать, второе — нет. Первое явилось итогом целенаправленных усилий по поиску экзопланет, второе стало для большинства ученых неожиданным результатом исследований в области внегалактической астрономии и космологии. Пожалуй, это были два самых главных открытия в астрономии с 1960-х годов. Значит, в современной науке какие-то крупные достижения мы можем предвидеть, а какие-то — нет. Будем считать, что бокал наполовину полон и попробуем задуматься, что мы узнаем о Вселенной в ближайшие тридцать лет.")
+
+post2 = Post.objects.create(author=author1, post='Статья', title="«Задача трех тел» — разбор полета", text="Попробуем завести новую рубрику: «Разбор полетов НФ». Что в научной фантастике соответствует науке, что нет, почему, и как оно на самом деле. Никому не придет в голову устраивать разбор, например, «Пикника на обочине». Что такое «комариная плешь» или «ведьмин студень»? Авторы не претендуют на наукообразное объяснение и избегают ответственности, приписывая эти штуки развитой внеземной цивилизации. Никому не придет в голову критиковать и Станислава Лема за «Солярис», где он описывает прекрасным научным языком совершенно вненаучные проявления Океана — «симметриады», «асимметриады» и прочее. Но если автор использует существующие научные понятия и строит на них сюжет, приходится «отвечать за базар». Для начала разбору полетов фантазии подлежит книга Лю Цысиня «Задача трех тел» (внимание: спойлеры).")
+
+post3 = Post.objects.create(author=author2, post='Новость', title="ЛЬЮИС ХЭМИЛТОН ПРИЗВАЛ ИСПОЛЬЗОВАТЬ ИСКУССТВЕННЫЙ ИНТЕЛЛЕКТ В СУДЕЙСТВЕ ФОРМУЛЫ 1", text="Международная автомобильная федерация FIA официально признала ошибки в работе своих стюардов, которые не оштрафовали голландца Макса Ферстаппена в квалификации Гран При Сингапура за момент, когда пилот Red Bull помешал японскому гонщику AlphaTauri Юки Цуноде на его быстром круге. Во избежание подобных ситуаций гонщик Mercedes-AMG Льюис Хэмилтон предложил FIA использовать в своей работе искусственный интеллект.«Некоторая ясность появилась, но я не совсем доволен ситуацией. Знаете, это правило было одним и тем же целую вечность, но всё равно судьи не смогли им воспользоваться. Я думаю, нам нужно начать изучать искусственный интеллект в качестве помощника для подобных ситуаций, чтобы в Формуле 1 могли принимать правильные решения. Мне бы хотелось понять, сможет ли искусственный интеллект делать эту работу и помогать судьям», — заявил Льюис Хэмилтон Autosport.")
+
+PostCategory.objects.create(post=post1, category=category1)
+PostCategory.objects.create(post=post2, category=category1)
+PostCategory.objects.create(post=post3, category=category2)
+PostCategory.objects.create(post=post3, category=category3)
+
+comment1 = Comment.objects.create(post=post1, user=user2, text="Отличная статья")
+comment2 = Comment.objects.create(post=post1, user=user1, text="Спасибо за положительные отзывы!")
+comment3 = Comment.objects.create(post=post2, user=user2, text="Не интересная статья.((")
+comment4 = Comment.objects.create(post=post3, user=user1, text="Между прочим эта идея очень хороша. Уже только очень упрямые наверное не пользуются, при наличии такой возможности.")
+comment5 = Comment.objects.create(post=post3, user=user2, text="Согласен с Вами!")
+
+post1.like()
+comment1.like()
+comment2.like()
+post2.dislike()
+post2.dislike()
+post2.dislike()
+comment3.dislike()
+comment3.like()
+comment3.like()
+post3.like()
+post3.like()
+comment4.like()
+comment4.like()
+comment4.like()
+comment5.like()
+
+author1.update_rating()
+author2.update_rating()
+
+best_user = Author.objects.all().order_by('-rating').first()
+best_user.user.username
+best_user.rating 
+
+best_post = Post.objects.all().order_by('-rating').first()
+best_post.post_created.strftime('%Y-%m-%d %H:%M:%S')
+best_post.author.user.username
+best_post.rating
+best_post.title
+best_post.preview()
+
+Comment.objects.filter(post_id=best_post.id).values('time_created', 'user__username', 'rating', 'text')
