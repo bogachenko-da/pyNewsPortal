@@ -1,0 +1,15 @@
+{% extends 'default.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+Новость/Статья
+{% endblock title %}
+
+{% block content %}
+    <h2>{{ post.title }}</h2>
+    <hr>
+    <h6>Дата публикации: {{ post.post_created|date:'d.m.Y' }}</h6>
+    <hr>
+    {{ post.text|censor}}
+{% endblock content %}

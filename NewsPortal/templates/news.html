@@ -1,0 +1,31 @@
+{% extends 'default.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+Новости и статьи
+{% endblock title %}
+
+{% block content %}
+    <h1>Все новости и статьи</h1>
+    <h6>Количество: {{ news|length }}</h6>
+    <hr>
+    {% if news %}
+        <table>
+            <tr>
+                <td>Заголовок</td>
+                <td>Дата публикации</td>
+                <td>Текст</td>
+            </tr>
+            {% for post in news %}
+            <tr>
+                <td>{{ post.title|censor }}</td>
+                <td>{{ post.post_created|date:'d.m.Y' }}</td>
+                <td>{{ post.text|truncatechars:20|censor }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h2>Новостей и статей нет!</h2>
+    {% endif %}
+{% endblock content %}
