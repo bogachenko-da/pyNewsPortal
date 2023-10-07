@@ -1,10 +1,8 @@
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm
-from datetime import datetime
 
 
 class NewsList(ListView):
