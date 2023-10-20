@@ -1,0 +1,10 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Новость/Статья
+{% endblock title %}
+
+{% block content %}
+    <h1 class="text-center">{{ message }} {{ category }}</h1>
+    <a href="{% url 'category_list' %}">Вернуться к списку категорий</a>
+{% endblock content %}

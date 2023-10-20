@@ -1,0 +1,28 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Список категорий
+{% endblock title %}
+
+{% block content %}
+    <h1>Список категорий</h1>
+    <hr>
+    <h6>Количество: {{ categories|length }}</h6>
+    <hr>
+    {% if categories %}
+        <table>
+            <tr>
+                <td>Название категории</td>
+            </tr>
+            {% for category in categories %}
+                <tr>
+                    <td>
+                        <a href="{% url 'category_posts_list' category.pk %}">{{ category.name }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h2>Категорий нет!</h2>
+    {% endif %}
+{% endblock content %}

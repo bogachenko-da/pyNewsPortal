@@ -10,15 +10,14 @@
 {% block content %}
     <h1>Поиск новостей и статей</h1>
 
-    <form action="" method="get">
-        {{ filterset.form.as_p }}
-        <input type="submit" value="Найти">
-    </form>
-
     <hr>
     <h6>Количество: {{ news|length }}</h6>
     <hr>
     {% if news %}
+        <form action="" method="get">
+            {{ filterset.form.as_p }}
+            <input type="submit" value="Найти">
+        </form>
         <table>
             <tr>
                 <td>Заголовок</td>
@@ -28,10 +27,16 @@
             </tr>
             {% for post in news %}
             <tr>
-                <td>{{ post.title|censor }}</td>
+                <td>
+                    <a href="{% url 'post_detail' post.id %}">{{ post.title | censor }}</a>
+                </td>
                 <td>{{ post.post_created|date:'d.m.Y' }}</td>
                 <td>{{ post.text|truncatechars:20|censor }}</td>
                 <td>{{ post.author.user.username }}</td>
+                <td>
+                    <a href="{% url 'post_edit' post.id %}">Редактировать</a>
+                    <a href="{% url 'post_delete' post.id %}">Удалить</a>
+                </td>
             </tr>
             {% endfor %}
         </table>

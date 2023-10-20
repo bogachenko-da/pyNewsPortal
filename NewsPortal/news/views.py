@@ -1,10 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import User, Group
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
+from .models import Post, Category
 from .filters import PostFilter
 from .forms import PostForm
 
@@ -95,3 +95,47 @@ def upgrade_me(request):
     if not request.user.groups.filter(name='authors').exists():
         authors_group.user_set.add(user)
     return redirect('/news/')
+
+
+class CategoriesList(ListView):
+    model = Category
+    ordering = 'name'
+    template_name = 'categories.html'
+    context_object_name = 'categories'
+
+
+class CategoryPostsList(ListView):
+    model = Post
+    template_name = 'category_posts_list.html'
+    context_object_name = 'category_posts'
+
+    def get_queryset(self):
+        self.category = Category.objects.get(pk=self.kwargs['pk'])
+        queryset = Post.objects.filter(categories=self.category).order_by('-post_created')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_subscriber'] = self.request.user not in self.category.subscribers.all()
+        context['category'] = self.category
+        return context
+
+
+@login_required
+def subscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    category.subscribers.add(user)
+    message = "Вы подписались на рассылку новостей категории"
+
+    return render(request, 'subscribe.html', {'message': message, 'category': category})
+
+
+@login_required
+def unsubscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    category.subscribers.remove(user)
+    message = "Вы отписались от рассылки новостей категории"
+
+    return render(request, 'subscribe.html', {'message': message, 'category': category})
