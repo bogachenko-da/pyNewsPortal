@@ -7,6 +7,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import Post, Category
 from .filters import PostFilter
 from .forms import PostForm
+from .tasks import send_new_post_notification
 
 
 class NewsList(ListView):
@@ -52,6 +53,7 @@ class PostCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         if self.request.path == '/articles/create/':
             post.post = 'AR'
         post.save()
+        send_new_post_notification.delay(post.pk)
         return super().form_valid(form)
 
 
