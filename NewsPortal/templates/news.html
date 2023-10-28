@@ -1,25 +1,30 @@
 {% extends 'default.html' %}
 
 {% load custom_filters %}
+{% load cache %}
 
 {% block title %}
 Новости и статьи
 {% endblock title %}
 
 {% block content %}
+    {% cache 60 h1 %}
     <h1>Все новости и статьи</h1>
     <hr>
     <h6>Количество: {{ news|length }}</h6>
     <hr>
     <a href="{% url 'post_create' %}">Создать новость/статью</a>
+    {% endcache %}
     {% if news %}
         <table>
+            {% cache 60 tr %}
             <tr>
                 <td>Заголовок</td>
                 <td>Дата публикации</td>
                 <td>Текст</td>
                 <td>Автор</td>
             </tr>
+            {% endcache %}
             {% for post in news %}
             <tr>
                 <td>
